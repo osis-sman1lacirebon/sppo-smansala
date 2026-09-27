@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <!-- Metadata Dasar Document -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengumuman Seleksi Penerimaan Pengurus OSIS</title>
+  
+  <!-- ========================================== -->
+  <!-- BAGIAN CSS (STYLING TAMPILAN WEBSITE)       -->
+  <!-- ========================================== -->
+  <style>
+    /* Reset margin, padding, dan atur box-sizing untuk seluruh elemen */
+    * { 
+      box-sizing: border-box; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    /* Mengatur latar belakang halaman dan meratakan konten ke tengah layar */
+    body { 
+      background: #f4f6f9; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      padding: 20px; 
+    }
+
+    /* Styling Wadah Utama (Card) */
+    .card { 
+      background: #ffffff; 
+      width: 100%; 
+      max-width: 450px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+      overflow: hidden; 
+    }
+
+    /* Styling Header Card */
+    .header { 
+      background: #003366; 
+      color: #ffffff; 
+      padding: 20px; 
+      text-align: center; 
+    }
+
+    /* Styling Area Konten Form */
+    .content { 
+      padding: 20px; 
+    }
+
+    /* Grouping untuk Label dan Input */
+    .form-group { 
+      margin-bottom: 15px; 
+    }
+
+    /* Styling Label Input */
+    .form-group label { 
+      display: block; 
+      font-size: 13px; 
+      font-weight: 600; 
+      margin-bottom: 5px; 
+      color: #333333;
+    }
+
+    /* Styling Input Text NISN */
+    .form-group input { 
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 6px; 
+      font-size: 14px; 
+      outline: none;
+    }
+
+    /* Focus State pada Input */
+    .form-group input:focus {
+      border-color: #003366;
+    }
+
+    /* Styling Tombol Utama (Cari Data) */
+    .btn { 
+      width: 100%; 
+      padding: 12px; 
+      background: #003366; 
+      color: #ffffff; 
+      border: none; 
+      border-radius: 6px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      transition: background 0.3s ease;
+    }
+
+    /* Efek Hover Tombol Utama */
+    .btn:hover { 
+      background: #002244; 
+    }
+
+    /* Styling Umum untuk Kotak Hasil (Lulus / Gagal) */
+    .result-box { 
+      display: none; /* Sembunyikan secara default */
+      padding: 20px; 
+      text-align: center; 
+      color: #ffffff; 
+      animation: fadeIn 0.4s ease-in-out; /* Animasi pemunculan */
+    }
+
+    /* Warna Kasus Lulus (Hijau) */
+    .lulus { 
+      background-color: #28a745; 
+    }
+
+    /* Warna Kasus Tidak Lulus (Merah) */
+    .gagal { 
+      background-color: #dc3545; 
+    }
+
+    /* Styling Kotak Rincian Nama & Jabatan */
+    .details { 
+      background: rgba(255, 255, 255, 0.2); 
+      padding: 12px; 
+      border-radius: 6px; 
+      text-align: left; 
+      margin: 15px 0; 
+      font-size: 14px; 
+      line-height: 1.6;
+    }
+
+    /* Tombol "Kembali" pada Hasil */
+    .btn-back { 
+      padding: 8px 16px; 
+      background: #ffffff; 
+      color: #333333; 
+      border: none; 
+      border-radius: 6px; 
+      font-weight: bold; 
+      cursor: pointer; 
+    }
+
+    /* Teks Indikator Loading Simulasi */
+    .loading { 
+      display: none; /* Sembunyikan secara default */
+      text-align: center; 
+      padding: 20px; 
+      color: #666666; 
+      font-weight: 500;
+    }
+
+    /* Definisi Keyframes Animasi Fade In */
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Card Utama -->
+  <div class="card">
+    
+    <!-- 1. Header Website -->
+    <div class="header">
+      <h3>PENGUMUMAN SELEKSI PENERIMAAN PENGURUS OSIS</h3>
+      <p style="font-size: 12px; opacity: 0.8; margin-top: 4px;">Masa Bakti 2026/2027</p>
+    </div>
+
+    <!-- 2. Form Input NISN -->
+    <div class="content" id="formSection">
+      <form id="searchForm">
+        <div class="form-group">
+          <label for="nisn">Masukkan NISN</label>
+          <input type="text" id="nisn" placeholder="Contoh: 0098####17" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn">LIHAT HASIL SELEKSI</button>
+      </form>
+    </div>
+
+    <!-- 3. Section Indikator Loading (Simulasi Pemrosesan Lokal) -->
+    <div class="loading" id="loadingSection">
+      ⏳ Memeriksa data...
+    </div>
+
+    <!-- 4. Section Tampilan Hasil LULUS (Kotak Hijau) -->
+    <div class="result-box lulus" id="lulusSection">
+      <h2>SELAMAT! ANDA LULUS</h2>
+      <div class="details">
+        <p><strong>Nama:</strong> <span id="txtNama"></span></p>
+        <p><strong>Jabatan:</strong> <span id="txtJabatan"></span></p>
+      </div>
+      <button class="btn-back" onclick="resetForm()">Kembali</button>
+    </div>
+
+    <!-- 5. Section Tampilan Hasil TIDAK LULUS (Kotak Merah) -->
+    <div class="result-box gagal" id="gagalSection">
+      <h2>MOHON MAAF</h2>
+      <p style="margin-top: 8px;">Anda Dinyatakan Tidak Lulus Seleksi Pengurus OSIS.</p>
+      <div class="details">
+        Tetap semangat dan teruslah berkarya di kesempatan lainnya!
+      </div>
+      <button class="btn-back" onclick="resetForm()">Kembali</button>
+    </div>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- BAGIAN JAVASCRIPT (LOGIKA DATA LOKAL)      -->
+  <!-- ========================================== -->
+  <script>
+    // 1. DATA LOKAL SISWA (DATABASE LOKAL DALAM KODE)
+    // Anda bisa menambah, mengubah, atau menghapus data siswa di dalam Array ini.
+    const dataSiswaLokal = [
+    { nisn: "0093879840", nama: "Jastine Mahardaka", jabatan: "KETUA" },
+    { nisn: "0105182088", nama: "Vika Navila Ramadina", jabatan: "WAKIL KETUA 1" },
+    { nisn: "0099259230", nama: "Muhamad Rendi Saputra", jabatan: "WAKIL KETUA 2" },
+    { nisn: "0101504905", nama: "Rahma Nurul Fadhilah", jabatan: "SEKRETARIS UMUM" },
+    { nisn: "0093142155", nama: "Aji Rukmana", jabatan: "SEKRETARIS 1" },
+    { nisn: "0017864246", nama: "Karanti Terahira Putri", jabatan: "SEKRETARIS 2" },
+    { nisn: "0104464378", nama: "Nindy Aprilleani Haryanto", jabatan: "BENDAHARA UMUM" },
+    { nisn: "0116469831", nama: "Dimayla Qotrunnada", jabatan: "BENDAHARA 1" },
+    { nisn: "0117854653", nama: "Quin Nasywa", jabatan: "BENDAHARA 2" },
+    { nisn: "010841127", nama: "Khairunnisa Pratiwi", jabatan: "KOORDINATOR SEKBID 1" },
+    { nisn: "0104482468", nama: "Nova Dwi Julianti", jabatan: "SEKBID 1 ANGGOTA 1" },
+    { nisn: "0119408559", nama: "Kafka Maulana", jabatan: "SEKBID 1 ANGGOTA 2" },
+    { nisn: "0095061213", nama: "Arinindya Utami", jabatan: "KOORDINATOR SEKBID 2" },
+    { nisn: "0112517348", nama: "Maulida Anggraini", jabatan: "SEKBID 2 ANGGOTA 1" },
+    { nisn: "0119551650", nama: "Ahmad Habil Rizki", jabatan: "SEKBID 2 ANGGOTA 2" },
+    { nisn: "0101908628", nama: "Haidar Mahya Nugraha", jabatan: "KOORDINATOR SEKBID 3" },
+    { nisn: "0101389703", nama: "Dika Bitzaki Pratama", jabatan: "SEKBID 3 ANGGOTA 1" },
+    { nisn: "0108448718", nama: "Muhammad Raya Naufal Ardhani", jabatan: "SEKBID 3 ANGGOTA 2" },
+    { nisn: "0106272119", nama: "Adelia Khoerunnisa", jabatan: "KOORDINATOR SEKBID 4" },
+    { nisn: "0111144751", nama: "Alrizkya Jingga Nerazzuri", jabatan: "SEKBID 4 ANGGOTA 1" },
+    { nisn: "0113678883", nama: "Alif Syahbani Fairuz", jabatan: "SEKBID 4 ANGGOTA 2" },
+    { nisn: "0096312680", nama: "Putri Fadilah", jabatan: "KOORDINATOR SEKBID 5" },
+    { nisn: "0117216902", nama: "Aini Nur Afifah", jabatan: "SEKBID 5 ANGGOTA 1" },
+    { nisn: "0098628608", nama: "Alfito Rafasakhi Adiano", jabatan: "SEKBID 5 ANGGOTA 2" },
+    { nisn: "0108904361", nama: "Amelia Muanti Putri", jabatan: "KOORDINATOR SEKBID 6" },
+    { nisn: "0107028891", nama: "Sausan Hisanan Talita", jabatan: "SEKBID 6 ANGGOTA 1" },
+    { nisn: "0108440923", nama: "Muhamad Hilal Alrizqy", jabatan: "SEKBID 6 ANGGOTA 2" },
+    { nisn: "0091030377", nama: "Cantika Putri Jahwa", jabatan: "KOORDINATOR SEKBID 7" },
+    { nisn: "0109464321", nama: "Sayyida Nafisa", jabatan: "SEKBID 7 ANGGOTA 1" },
+    { nisn: "3105967577", nama: "Luthfi Tristianan Larasati", jabatan: "SEKBID 7 ANGGOTA 2" },
+    { nisn: "0093865695", nama: "Aura Yasmin Fadila", jabatan: "KOORDINATOR SEKBID 8" },
+    { nisn: "0104275275", nama: "Al Faridzy Budiman", jabatan: "SEKBID 8 ANGGOTA 1" },
+    { nisn: "0115451449", nama: "Reva Diyah Puspita", jabatan: "SEKBID 8 ANGGOTA 2" },
+    { nisn: "3101083970", nama: "Hisam Mansur", jabatan: "KOORDINATOR SEKBID 9" },
+    { nisn: "0113275398", nama: "Cantika Nur Adelia", jabatan: "SEKBID 9 ANGGOTA 1" },
+    { nisn: "0078728488", nama: "Trisna Fadhillah Nurrahmah", jabatan: "SEKBID 9 ANGGOTA 2" },
+    { nisn: "0107218393", nama: "Isti Anatu Khoeriyah", jabatan: "KOORDINATOR SEKBID 10" },
+    { nisn: "0116604677", nama: "Keilla Febry Anabel", jabatan: "SEKBID 10 ANGGOTA 1" },
+    { nisn: "0117031453", nama: "Zharefa Yumna Al-Akis", jabatan: "SEKBID 10 ANGGOTA 2" },
+    { nisn: "0098144917", nama: "Zafran Aqeel Azizi Agung", jabatan: "Kepala SMA Negeri 1 Lemahabang Kabupaten Cirebon" }
+
+  ];
+
+    // 2. Inisialisasi variabel elemen HTML
+    const formSection = document.getElementById('formSection');
+    const loadingSection = document.getElementById('loadingSection');
+    const lulusSection = document.getElementById('lulusSection');
+    const gagalSection = document.getElementById('gagalSection');
+    const searchForm = document.getElementById('searchForm');
+
+    // 3. Menambahkan Event Listener saat Form disubmit
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Ambil nilai NISN dari input dan hapus spasi berlebih dengan trim()
+      const nisnValue = document.getElementById('nisn').value.trim();
+
+      // Sembunyikan form input dan tampilkan indikator loading
+      formSection.style.display = 'none';
+      loadingSection.style.display = 'block';
+
+      // 4. Proses Pencarian Lokal dengan Delay Singkat (Simulasi Efek Loading 500ms)
+      setTimeout(() => {
+        loadingSection.style.display = 'none';
+
+        // Cari data NISN di dalam array dataSiswaLokal
+        const siswaDitemukan = dataSiswaLokal.find(siswa => siswa.nisn === nisnValue);
+
+        if (siswaDitemukan) {
+          // Jika NISN ada di data lokal: Tampilkan nama dan jabatan
+          document.getElementById('txtNama').innerText = siswaDitemukan.nama;
+          document.getElementById('txtJabatan').innerText = siswaDitemukan.jabatan;
+          lulusSection.style.display = 'block';
+        } else {
+          // Jika NISN tidak ada: Tampilkan tampilan tidak lulus
+          gagalSection.style.display = 'block';
+        }
+      }, 500); // 500ms = 0.5 detik
+    });
+
+    // 5. Fungsi untuk mengembalikan tampilan ke Form Input Awal
+    function resetForm() {
+      lulusSection.style.display = 'none';
+      gagalSection.style.display = 'none';
+      formSection.style.display = 'block';
+      searchForm.reset();
+    }
+  </script>
+</body>
+</html>
